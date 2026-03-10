@@ -2,35 +2,75 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Orzo</title>
   <style>
-    body { margin:0; font-family: system-ui, sans-serif; background:#0f172a; color:#fff; }
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, sans-serif;
+      background: #0f172a;
+      color: #fff;
+    }
+
     .topbar {
-      padding:12px 12px 0;
-      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+      padding: 12px 12px 0;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
     }
+
     input, button {
-      font-size:16px; padding:10px 12px; border-radius:12px; border:1px solid rgba(255,255,255,.15);
-      background: rgba(255,255,255,.06); color:#fff;
+      font-size: 16px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.15);
+      background: rgba(255,255,255,.06);
+      color: #fff;
     }
-    button { cursor:pointer; background:#111827; border:1px solid rgba(255,255,255,.14); }
-    button.primary { background:#22c55e; color:#06121a; border:0; font-weight:700; }
-    button.secondary { background: rgba(255,255,255,.06); }
-    .pill { padding:6px 10px; border-radius:999px; font-size:13px; }
-    .ok { background:#22c55e; color:#06121a; }
-    .bad { background:#ef4444; color:#fff; }
+
+    button {
+      cursor: pointer;
+      background: #111827;
+      border: 1px solid rgba(255,255,255,.14);
+    }
+
+    button.primary {
+      background: #22c55e;
+      color: #06121a;
+      border: 0;
+      font-weight: 700;
+    }
+
+    button.secondary {
+      background: rgba(255,255,255,.06);
+    }
+
+    .pill {
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 13px;
+    }
+
+    .ok { background: #22c55e; color: #06121a; }
+    .bad { background: #ef4444; color: #fff; }
+
     @keyframes popIn {
-     0% { transform: translateY(-18px) scale(0.92); opacity: 0; }
-     100% { transform: translateY(0) scale(1); opacity: 1; }
+      0% { transform: translateY(-18px) scale(0.92); opacity: 0; }
+      100% { transform: translateY(0) scale(1); opacity: 1; }
     }
+
     .svgCard.newCard {
       animation: popIn 420ms ease-out;
       outline: 3px solid rgba(255,255,255,.35);
-    
     }
-    /* Tavolo */
-    .tableWrap { padding:12px; }
+
+    .tableWrap {
+      padding: 12px;
+    }
+
     .table {
       position: relative;
       width: 100%;
@@ -41,167 +81,403 @@
       border-radius: 28px;
       border: 2px solid rgba(255,255,255,.12);
       box-shadow: 0 18px 50px rgba(0,0,0,.45);
-      overflow:hidden;
+      overflow: hidden;
     }
-    .center {
-      position:absolute; inset: 0;
-      display:flex; flex-direction:column; align-items:center; justify-content:center;
-      gap: 10px;
-      pointer-events:none;
-    }
-    .piles {
-      display:flex; gap:18px; align-items:flex-end;
-      pointer-events:auto;
-    }
-    .pileLabel { text-align:center; font-size:12px; opacity:.8; margin-top:6px; }
-    .deckCount { text-align:center; font-size:12px; opacity:.8; margin-top:6px; }
 
-    /* Posti giocatori (fino a 6) */
-    .seat {
-      position:absolute;
-      width: 170px;
-      display:flex; flex-direction:column; align-items:center; gap:6px;
-      text-align:center;
+    .center {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      pointer-events: none;
+      padding: 10px;
+      text-align: center;
     }
+
+    .piles {
+      display: flex;
+      gap: 18px;
+      align-items: flex-end;
+      pointer-events: auto;
+    }
+
+    .pileLabel {
+      text-align: center;
+      font-size: 12px;
+      opacity: .8;
+      margin-top: 6px;
+    }
+
+    .deckCount {
+      text-align: center;
+      font-size: 12px;
+      opacity: .8;
+      margin-top: 6px;
+    }
+
+    .seat {
+      position: absolute;
+      width: 170px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      text-align: center;
+    }
+
     .nameTag {
       max-width: 170px;
-      padding:6px 10px;
-      border-radius:999px;
+      padding: 6px 10px;
+      border-radius: 999px;
       background: rgba(0,0,0,.25);
       border: 1px solid rgba(255,255,255,.16);
-      font-size:13px;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-    .nameTag.turn { outline: 2px solid #fbbf24; }
-    .miniCards { display:flex; gap:4px; opacity:.9; }
+
+    .nameTag.turn {
+      outline: 2px solid #fbbf24;
+    }
+
+    .miniCards {
+      display: flex;
+      gap: 4px;
+      opacity: .9;
+    }
+
     .miniBack {
-      width: 16px; height: 22px;
-      border-radius:4px;
+      width: 16px;
+      height: 22px;
+      border-radius: 4px;
       background: repeating-linear-gradient(45deg, #0b1020, #0b1020 6px, #111827 6px, #111827 12px);
-      border:1px solid rgba(255,255,255,.18);
+      border: 1px solid rgba(255,255,255,.18);
     }
 
-    /* posizioni */
-    .pos-bottom { left:50%; bottom:12px; transform:translateX(-50%); }
-    .pos-top { left:50%; top:12px; transform:translateX(-50%); }
-    .pos-left { left:12px; top:50%; transform:translateY(-50%); }
-    .pos-right { right:12px; top:50%; transform:translateY(-50%); }
-    .pos-top-left { left:16px; top:16px; }
-    .pos-top-right { right:16px; top:16px; }
+    .pos-bottom { left: 50%; bottom: 12px; transform: translateX(-50%); }
+    .pos-top { left: 50%; top: 12px; transform: translateX(-50%); }
+    .pos-left { left: 12px; top: 50%; transform: translateY(-50%); }
+    .pos-right { right: 12px; top: 50%; transform: translateY(-50%); }
+    .pos-top-left { left: 16px; top: 16px; }
+    .pos-top-right { right: 16px; top: 16px; }
 
-    /* Mano in basso (fuori dal tavolo) */
     .handBar {
-      max-width: 980px; margin: 0 auto;
+      max-width: 980px;
+      margin: 0 auto;
       padding: 10px 12px 18px;
-      display:flex; flex-direction:column; gap:10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
-    .handRow { display:flex; gap:10px; flex-wrap:wrap; }
-    .cardBtn { border:0; background:transparent; padding:0; cursor:pointer; }
 
-    /* area azioni */
-    .actions {
-      display:flex; gap:10px; flex-wrap:wrap;
+    .handRow {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
     }
+
+    .cardBtn {
+      border: 0;
+      background: transparent;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
     .panel {
       background: rgba(255,255,255,.06);
       border: 1px solid rgba(255,255,255,.12);
       border-radius: 18px;
       padding: 10px 12px;
     }
-    .small { font-size:13px; opacity:.85; }
-    .pending { display:none; }
-    .reaction { display:none; }
 
-    /* SVG card wrapper */
+    .small {
+      font-size: 13px;
+      opacity: .85;
+    }
+
+    .pending { display: none; }
+    .reaction { display: none; }
+
     .svgCard {
-      width: 92px; height: 140px;
+      width: 92px;
+      height: 140px;
       border-radius: 16px;
       box-shadow: 0 10px 22px rgba(0,0,0,.28);
-      overflow:hidden;
-      display:block;
+      overflow: hidden;
+      display: block;
     }
+
     .svgCard.small {
-      width: 72px; height: 110px;
+      width: 72px;
+      height: 110px;
       border-radius: 14px;
     }
-    .oppSlots{
-     display:flex;
-     gap:6px;
-     flex-wrap:wrap;
-     justify-content:center;
+
+    .oppSlots {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: center;
     }
-    .slotBtn{
-      width:28px; height:40px;
-      border-radius:8px;
-      border:1px solid rgba(255,255,255,.2);
+
+    .slotBtn {
+      width: 28px;
+      height: 40px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,.2);
       background: rgba(0,0,0,.18);
-      padding:0;
-      cursor:pointer;
-    }
-    .slotBtn.empty{
-      opacity:.35;
-      border-style:dashed;
-    }
-    .slotBtn .miniBack{
-      width:100%; height:100%;
-      border-radius:8px;
-    }
-    /* --- FX layer sopra tutto il tavolo --- */
-    #fxLayer{
-     position:absolute;
-     inset:0;
-     pointer-events:none;
-     z-index:999;
+      padding: 0;
+      cursor: pointer;
     }
 
-/* carta fantasma in volo (casino style) */
-   .flyingCard{
-     position:fixed;
-     width:92px;
-     height:140px;
-     z-index:99999;
-     transform-style:preserve-3d;
-     will-change: transform, opacity;
-     pointer-events:none;
+    .slotBtn.empty {
+      opacity: .35;
+      border-style: dashed;
     }
 
-/* “flip / tilt” durante volo */
-    .flyingCard .inner{
-     width:100%;
-     height:100%;
-     transform-style:preserve-3d;
+    .slotBtn .miniBack {
+      width: 100%;
+      height: 100%;
+      border-radius: 8px;
     }
 
-/* back card già la fai via SVG */
-   .flyingCard svg{
-     width:100%;
-     height:100%;
-     display:block;
-     border-radius:16px;
-     box-shadow: 0 18px 40px rgba(0,0,0,.35);
+    #fxLayer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 999;
     }
 
-/* piccolo “atterraggio” */
-   @keyframes land {
-     0%   { transform: scale(1.00); }
-     55%  { transform: scale(1.06); }
-     100% { transform: scale(1.00); }
+    .flyingCard {
+      position: fixed;
+      width: 92px;
+      height: 140px;
+      z-index: 99999;
+      transform-style: preserve-3d;
+      will-change: transform, opacity;
+      pointer-events: none;
     }
-    .land { animation: land 140ms ease-out; }
+
+    .flyingCard .inner {
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+    }
+
+    .flyingCard svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      border-radius: 16px;
+      box-shadow: 0 18px 40px rgba(0,0,0,.35);
+    }
+
+    @keyframes land {
+      0% { transform: scale(1); }
+      55% { transform: scale(1.06); }
+      100% { transform: scale(1); }
+    }
+
+    .land {
+      animation: land 140ms ease-out;
+    }
+
+    /* ===== MOBILE ===== */
+    @media (max-width: 700px) {
+      body {
+        overflow-x: hidden;
+      }
+
+      .topbar {
+        padding: 8px;
+        gap: 6px;
+      }
+
+      input, button {
+        font-size: 14px;
+        padding: 8px 10px;
+      }
+
+      .pill {
+        font-size: 12px;
+        padding: 5px 8px;
+      }
+
+      .tableWrap {
+        padding: 8px;
+      }
+
+      .table {
+        max-width: 100%;
+        height: 54vh;
+        aspect-ratio: auto;
+        border-radius: 20px;
+      }
+
+      .center {
+        gap: 6px;
+        padding: 8px;
+      }
+
+      .piles {
+        gap: 12px;
+      }
+
+      .seat {
+        width: 96px;
+        gap: 4px;
+      }
+
+      .nameTag {
+        max-width: 96px;
+        font-size: 10px;
+        padding: 4px 7px;
+      }
+
+      .miniBack {
+        width: 12px;
+        height: 17px;
+      }
+
+      .oppSlots {
+        gap: 4px;
+      }
+
+      .slotBtn {
+        width: 20px;
+        height: 30px;
+        border-radius: 6px;
+      }
+
+      .pos-bottom { left: 50%; bottom: 8px; transform: translateX(-50%); }
+      .pos-top { left: 50%; top: 8px; transform: translateX(-50%); }
+      .pos-left { left: 6px; top: 50%; transform: translateY(-50%); }
+      .pos-right { right: 6px; top: 50%; transform: translateY(-50%); }
+      .pos-top-left { left: 8px; top: 8px; }
+      .pos-top-right { right: 8px; top: 8px; }
+
+      .svgCard {
+        width: 64px;
+        height: 96px;
+        border-radius: 12px;
+      }
+
+      .svgCard.small {
+        width: 50px;
+        height: 76px;
+        border-radius: 10px;
+      }
+
+      .handBar {
+        padding: 8px 8px 14px;
+        gap: 8px;
+      }
+
+      .actions {
+        gap: 6px;
+      }
+
+      .actions button {
+        font-size: 13px;
+        padding: 8px 9px;
+      }
+
+      .panel {
+        padding: 8px 10px;
+        border-radius: 14px;
+      }
+
+      .small {
+        font-size: 11px;
+      }
+
+      .flyingCard {
+        width: 64px;
+        height: 96px;
+      }
+
+      #roundModal > div {
+        margin: 14px 10px;
+        max-width: none;
+        padding: 12px;
+      }
+    }
+
+    @media (max-width: 430px) {
+      .topbar {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        align-items: stretch;
+      }
+
+      .topbar input,
+      .topbar button {
+        width: 100%;
+        min-width: 0;
+      }
+
+      .topbar span {
+        grid-column: span 2;
+      }
+
+      .table {
+        height: 50vh;
+      }
+
+      .seat {
+        width: 82px;
+      }
+
+      .nameTag {
+        max-width: 82px;
+        font-size: 9px;
+      }
+
+      .svgCard {
+        width: 58px;
+        height: 88px;
+      }
+
+      .svgCard.small {
+        width: 46px;
+        height: 70px;
+      }
+
+      .slotBtn {
+        width: 18px;
+        height: 27px;
+      }
+
+      .flyingCard {
+        width: 58px;
+        height: 88px;
+      }
+    }
   </style>
 </head>
-<div id="roundModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.65); z-index:9999;">
-  <div style="max-width:980px; margin:40px auto; background:#0b1220; border:1px solid rgba(255,255,255,.15); border-radius:18px; padding:16px;">
-    <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
-      <div><b>Fine round — Classifica (meno punti = meglio)</b></div>
-      <button id="closeRoundModal">Chiudi</button>
-    </div>
-    <div id="roundBoard" style="margin-top:12px;"></div>
-  </div>
-</div>
 <body>
+
+  <div id="roundModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.65); z-index:9999;">
+    <div style="max-width:980px; margin:40px auto; background:#0b1220; border:1px solid rgba(255,255,255,.15); border-radius:18px; padding:16px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+        <div><b>Fine round — Classifica (meno punti = meglio)</b></div>
+        <button id="closeRoundModal">Chiudi</button>
+      </div>
+      <div id="roundBoard" style="margin-top:12px;"></div>
+    </div>
+  </div>
+
   <div class="topbar">
     <input id="nickname" placeholder="Nome" />
     <button class="primary" id="createBtn">Crea</button>
@@ -216,7 +492,6 @@
 
   <div class="tableWrap">
     <div class="table" id="table">
-      <!-- seats injected by JS -->
       <div class="center">
         <div class="piles">
           <div>
@@ -235,6 +510,7 @@
         <div class="small" id="status">—</div>
         <div class="small" id="info">—</div>
       </div>
+
       <div id="fxLayer"></div>
     </div>
   </div>
@@ -262,6 +538,7 @@
         <button id="reactSelfBtn">Reagisci (su di me)</button>
         <button class="secondary" id="reactOtherBtn">Reagisci (su un altro)</button>
       </div>
+      <div class="small" id="reactionCountdown" style="margin-top:6px;"></div>
     </div>
 
     <div class="panel">
@@ -274,4 +551,3 @@
   <script src="main.js"></script>
 </body>
 </html>
-<div class="small" id="reactionCountdown" style="margin-top:6px;"></div>
