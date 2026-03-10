@@ -88,35 +88,107 @@ socket.on("specialStarted", ({ type, playerId }) => {
   if (!lastState?.me) return;
   if (playerId !== lastState.me.id) return;
 
+  handleMySpecial(type);
+});
+function handleMySpecial(type) {
+  if (!lastState?.me) return;
+  const gameId = document.getElementById("gameId").value.trim();
+
   if (type === "LOOK") {
     alert("Hai scartato un FANTE (8)! Clicca una tua carta per guardarla.");
+    return;
   }
 
   if (type === "KING") {
-    const name = prompt("RE (10): scrivi il NOME del giocatore a cui dare 1 carta:");
-    if (!name) return;
+    while (true) {
+      const available = (lastState.players || [])
+        .filter(p => p.id !== lastState.me.id)
+        .map(p => p.name)
+        .join(", ");
 
-    const target = lastState.players.find(p => p.name === name);
-    if (!target) return alert("Nome non trovato");
+      const name = prompt(
+        `RE (10): scrivi il NOME del giocatore a cui dare 1 carta.\nGiocatori disponibili: ${available}\n\nLascia vuoto o premi Annulla per riprovare dopo.`
+      );
 
-    const gameId = document.getElementById("gameId").value.trim();
-    socket.emit("useKing", { gameId, targetId: target.id });
+      if (name == null || !name.trim()) {
+        alert("Potere RE ancora attivo. Quando vuoi riprovare, premi di nuovo un pulsante o fai aggiornare lo stato.");
+        return;
+      }
+
+      const target = lastState.players.find(
+        p => p.id !== lastState.me.id && p.name.toLowerCase() === name.trim().toLowerCase()
+      );
+
+      if (!target) {
+        alert("Nome non trovato. Riprova.");
+        continue;
+      }
+
+      socket.emit("useKing", { gameId, targetId: target.id });
+      return;
+    }
   }
 
   if (type === "HORSE") {
-    const otherName = prompt("CAVALLO (9): nome del giocatore con cui scambiare:");
-    if (!otherName) return;
+    while (true) {
+      const available = (lastState.players || [])
+        .filter(p => p.id !== lastState.me.id)
+        .map(p => p.name)
+        .join(", ");
 
-    const other = lastState.players.find(p => p.name === otherName);
-    if (!other) return alert("Nome non trovato");
+      const otherName = prompt(
+        `CAVALLO (9): nome del giocatore con cui scambiare.\nGiocatori disponibili: ${available}\n\nLascia vuoto o premi Annulla per riprovare dopo.`
+      );
 
-    const myPos = Number(prompt("Quale tua carta? (1-4)")) - 1;
-    const otherPos = Number(prompt("Quale carta sua? (1-4)")) - 1;
+      if (otherName == null || !otherName.trim()) {
+        alert("Potere CAVALLO ancora attivo. Quando vuoi riprovare, premi di nuovo un pulsante o fai aggiornare lo stato.");
+        return;
+      }
 
-    const gameId = document.getElementById("gameId").value.trim();
-    socket.emit("useHorse", { gameId, myIndex: myPos, otherId: other.id, otherIndex: otherPos });
+      const other = lastState.players.find(
+        p => p.id !== lastState.me.id && p.name.toLowerCase() === otherName.trim().toLowerCase()
+      );
+
+      if (!other) {
+        alert("Nome non trovato. Riprova.");
+        continue;
+      }
+
+      const myPosRaw = prompt("Quale tua carta vuoi scambiare? Scrivi 1, 2, 3, 4...");
+      if (myPosRaw == null) {
+        alert("Potere CAVALLO ancora attivo.");
+        return;
+      }
+
+      const otherPosRaw = prompt(`Quale carta di ${other.name} vuoi prendere? Scrivi 1, 2, 3, 4...`);
+      if (otherPosRaw == null) {
+        alert("Potere CAVALLO ancora attivo.");
+        return;
+      }
+
+      const myPos = Number(myPosRaw) - 1;
+      const otherPos = Number(otherPosRaw) - 1;
+
+      if (!Number.isInteger(myPos) || myPos < 0) {
+        alert("Indice tua carta non valido. Riprova.");
+        continue;
+      }
+
+      if (!Number.isInteger(otherPos) || otherPos < 0) {
+        alert("Indice carta avversario non valido. Riprova.");
+        continue;
+      }
+
+      socket.emit("useHorse", {
+        gameId,
+        myIndex: myPos,
+        otherId: other.id,
+        otherIndex: otherPos
+      });
+      return;
+    }
   }
-});
+}
 socket.on("cardsAdded", ({ playerId, indices }) => {
   if (!lastState?.me) return;
   if (playerId !== lastState.me.id) return;
@@ -263,6 +335,7 @@ function render(state) {
   } else {
     elDiscardCard.appendChild(cardSvgEmpty("svgCard"));
     elDiscardHint.textContent = "vuoto";
+  
   }
 
   renderTableSeats(state); 
@@ -286,6 +359,22 @@ function render(state) {
   }
 
   lastPendingActive = nowPending;
+    if (
+    state?.special?.active &&
+    state.special.playerId === state.me?.id &&
+    (state.special.type === "KING" || state.special.type === "HORSE")
+  ) {
+    clearTimeout(window.__retrySpecialTimer);
+    window.__retrySpecialTimer = setTimeout(() => {
+      if (
+        lastState?.special?.active &&
+        lastState.special.playerId === lastState.me?.id &&
+        (lastState.special.type === "KING" || lastState.special.type === "HORSE")
+      ) {
+        handleMySpecial(lastState.special.type);
+      }
+    }, 300);
+  }
 }
 
 /* ---------------- MANO ---------------- */
