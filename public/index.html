@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Gioco Carte Napoletane</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    .hand { margin-top: 10px; }
+    .card { display: inline-block; padding: 10px; border: 1px solid #000; margin: 2px; }
+  </style>
+</head>
+<body>
+  <h1>Gioco Carte Napoletane</h1>
+  <input id="nickname" placeholder="Inserisci il tuo nome">
+  <button id="createBtn">Crea Partita</button>
+  <input id="gameId" placeholder="ID partita">
+  <button id="joinBtn">Unisciti</button>
+
+  <div id="game" style="display:none">
+    <p>Il tuo turno: <span id="currentPlayer"></span></p>
+    <div class="hand" id="hand"></div>
+    <button id="stoBtn">Dichiara STÒ</button>
+  </div>
+  <button id="createBtn">Crea partita</button>
+<button id="joinBtn">Unisciti</button>
+<input id="nickname" placeholder="Nickname" />
+<input id="gameId" placeholder="ID partita" />
+<button id="drawDeckBtn">Pesca dal mazzo</button>
+<button id="drawDiscardBtn">Pesca dagli scarti</button>
+<button id="stoBtn">Dichiara STÒ</button>
+
+<div id="currentPlayer"></div>
+<div id="hand"></div>
+<div id="discard"></div>
+<div id="game" style="display:none"></div>
+
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
+<<<<<<< HEAD
+<div id="pendingChoice" style="display:none">
+  <p>Hai pescato una carta. Vuoi scambiarla con una delle tue o scartarla?</p>
+  <button id="discardDrawnBtn">Scarta pescata</button>
+</div>
+=======
+<button id="createBtn">Crea partita</button>
+<button id="joinBtn">Unisciti</button>
+<input id="nickname" placeholder="Nickname" />
+<input id="gameId" placeholder="ID partita" />
+<button id="drawDeckBtn">Pesca dal mazzo</button>
+<button id="drawDiscardBtn">Pesca dagli scarti</button>
+<button id="stoBtn">Dichiara STÒ</button>
+
+<div id="currentPlayer"></div>
+<div id="hand"></div>
+<div id="discard"></div>
+<div id="game" style="display:none"></div>
+<div id="pendingChoice" style="display:none">
+  <p>Hai pescato una carta. Vuoi scambiarla con una delle tue o scartarla?</p>
+  <button id="discardDrawnBtn">Scarta pescata</button>
+</div>
+>>>>>>> 503288c (WIP: salvo modifiche locali prima di pull)
