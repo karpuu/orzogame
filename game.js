@@ -397,17 +397,24 @@ export function tryMatchOtherDiscard(game, attackerId, targetId, handIndex) {
   const target = game.players.find(p => p.id === targetId);
   if (!attacker || !target) return { success: false, message: "Giocatori non trovati" };
 
+  if (handIndex < 0 || handIndex >= target.hand.length) {
+    return { success: false, message: "Indice non valido" };
+  }
+
   const chosen = target.hand[handIndex];
   if (!chosen) return { success: false, message: "Slot vuoto" };
 
-  // ✅ sempre scarta la carta del target e lascia buco
+  // scarta sempre la carta del target e lascia il buco
   removeCardFromHand(target, handIndex);
   game.discardPile.push(chosen);
 
-  // ✅ se giusta: ok, nessuna penalità
-  if (chosen.valore === top.valore) return { success: true, correct: true };
+  // ✅ se hai indovinato, il target pesca 2 carte
+  if (chosen.valore === top.valore) {
+    const idx = drawPenalty(game, target, 2);
+    return { success: true, correct: true, drew: { playerId: targetId, indices: idx } };
+  }
 
-  // ❌ se sbagliata: penalità a chi ha provato
+  // ❌ se hai sbagliato, peschi tu 2 carte
   const idx = drawPenalty(game, attacker, 2);
   return { success: true, correct: false, drew: { playerId: attackerId, indices: idx } };
 }
